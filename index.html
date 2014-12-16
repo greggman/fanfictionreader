@@ -63,8 +63,6 @@ var talk = $("talk");
 var stop = $("stop");
 
 var msg = new SpeechSynthesisUtterance();
-var voices = window.speechSynthesis.getVoices();
-msg.voice = voices[10]; // Note: some voices don't support altering params
 msg.voiceURI = 'native';
 msg.volume = 1; // 0 to 1
 msg.rate = 0.7; // 0.1 to 10
@@ -87,13 +85,12 @@ if (voices && voices.length) {
   appendVoice("**NO VOICES**");
 }
 
-msg.onend = function(e) {
+msg.onend = function(event) {
   console.log('Finished in ' + event.elapsedTime + ' seconds.');
 };
 
 var startTalking = function() {
   msg.text = t.value;
-  console.log(msg.text);
   speechSynthesis.speak(msg);
 };
 
