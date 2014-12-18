@@ -42,8 +42,40 @@
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
   <meta name="format-detection" content="telephone=no" />
   <title>HTML5 Text To Speech</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+    }
+    input {
+      display: block;
+      width: 300px;
+    }
+    select {
+      gdisplay: block;
+    }
+    body, button, textarea {
+      font-family: monospace;
+    }
+    button {
+      padding: 1em;
+      border-radius: 1em;
+      margin: 1em;
+    }
+    #t {
+      width: 100%;
+      height: 10em;
+    }
+    .warn {
+      color: red;
+    }
+  </style>
 </head>
 <body>
+<p class="warn">Note: This only works correctly in Safari. On Chrome, as of v39, there's a bug which prevents long strings from working.
+Change the string to something small like "hello world" and it works. Firefox as of v32 doesn't yet support the
+HTML5 Speech Synthesis API.
+</p>
 <textarea id="t">
 We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
 
@@ -97,31 +129,6 @@ Each House shall keep a Journal of its Proceedings, and from time to time publis
 
 Neither House, during the Session of Congress, shall, without the Consent of the other, adjourn for more than three days, nor to any other Place than that in which the two Houses shall be sitting.
 </textarea><br/>
-<style>
-  * {
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-  }
-  input {
-    display: block;
-    width: 300px;
-  }
-  select {
-    gdisplay: block;
-  }
-  body, button, textarea {
-    font-family: monospace;
-  }
-  button {
-    padding: 1em;
-    border-radius: 1em;
-    margin: 1em;
-  }
-  #t {
-    width: 100%;
-    height: 10em;
-  }
-</style>
 <button id="talk">talk</button><button id="stop">stop</button>
 <input type="range" value="1" id="rate"  step="0.1" min="0.1" max="10" />
 <input type="range" value="1"   id="pitch" step="0.1" min="0"   max="2"  />
