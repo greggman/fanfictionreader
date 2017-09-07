@@ -1,5 +1,5 @@
-Text2Speech
-===========
+Fan Fiction Reader
+==================
 
-[A simple text HTML5 to speech example](http://greggman.github.io/text2speech)
+[Past your fan fiction in and have it read to you](http://greggman.github.io/fanfictionreader)
 
