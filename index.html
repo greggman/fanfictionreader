@@ -42,10 +42,19 @@
       -moz-box-sizing: border-box;
     }
     body {
-        background-color: #222;
-        color: #EEE;
+        background-color: rgb(255, 89, 248);
+        color: white;
         font-size: large;
         margin: 0;
+    }
+    .header {
+        background: #de36c2;
+        margin-bottom: 1em;
+        border-radius: .75em;
+        padding: 0em .5em .5em;
+    }
+    h1 {
+        margin: .2em 0 .2em 0;
     }
     outer {
         width: 100vw;
@@ -59,9 +68,12 @@
     }
     select {
       font-size: large;
+      background: rgb(247, 83, 255);
+      color: white;
+      border: none;
     }
     body, button, textarea {
-      font-family: monospace;
+      font-family: sans-serif;
     }
     .header {
         margin-bottom: 1em;
@@ -69,16 +81,33 @@
     textarea {
       padding: .5em;
       flex: 1 1 auto;
-      background: #111;
+      background: #d70c91;;
       color: #EEE;
       font-size: medium;
       display: block;
+      border-radius: 1em;
+      border: none;
     }
     button {
-      padding: .5em;
-      border-radius: .5em;
-      margin: 1em 1em 1em 0;
-      font-size: x-large;
+        border-radius: 20px;
+        background: #cb4ea5;
+        color: #fff;
+        box-shadow: 0 6px #ab3c3c;
+        -webkit-transition: none;
+        -moz-transition: none;
+        border: none;
+        font-family: inherit;
+        font-size: inherit;
+        cursor: pointer;
+        padding: 25px 40px;
+        display: inline-block;
+        margin: 15px 10px 15px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        outline: none;
+        position: relative;
+        transition: all 0.3s;
     }
     .settings>div>div>span {
         position: absolute;
@@ -86,8 +115,10 @@
     }
     .settings>div {
         margin: .2em;
+        padding: .2em;
         width: 410px;
-        background: #333;
+        background: #de36c2;
+        border-radius: .5em;
     }
     .settings>div>div {
         display: table-cell;
@@ -229,6 +260,9 @@ function main() {
   function start() {
     if (voices && voices.length) {
       voices.filter(v => v.localService).forEach(function(voice) {
+        if (voice.name === "Victoria") {
+          settings.voice = voice;
+        }
         const opt = document.createElement("option");
         opt.appendChild(document.createTextNode(`${voice.name} [${voice.lang}]`));
         if (voice.default) {
@@ -236,7 +270,7 @@ function main() {
         }
         v.appendChild(opt);
       });
-      settings.voice = voices[0];
+      settings.voice = settings.voice || voices[0];
     }
 
     v.addEventListener('change', function(e) {
