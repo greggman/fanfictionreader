@@ -31,52 +31,92 @@
  */
 -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, minimal-ui">
-  <meta name="format-detection" content="telephone=no" />
-  <title>HTML5 Text To Speech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Fan Fiction Reader</title>
   <style>
     * {
       box-sizing: border-box;
       -moz-box-sizing: border-box;
     }
-    input {
-      display: block;
+    body {
+        background-color: #222;
+        color: #EEE;
+        font-size: large;
+        margin: 0;
+    }
+    outer {
+        width: 100vw;
+        height: 100vh;
+        padding: 1em;
+        display: flex;
+        flex-direction: column;
+    }
+    input, select {
       width: 300px;
     }
     select {
-      gdisplay: block;
+      font-size: large;
     }
     body, button, textarea {
       font-family: monospace;
     }
-    button {
-      padding: 1em;
-      border-radius: 1em;
-      margin: 1em;
+    .header {
+        margin-bottom: 1em;
     }
-    #t {
-      width: 100%;
-      height: 10em;
+    textarea {
+      padding: .5em;
+      flex: 1 1 auto;
+      background: #111;
+      color: #EEE;
+      font-size: medium;
+      display: block;
+    }
+    button {
+      padding: .5em;
+      border-radius: .5em;
+      margin: 1em 1em 1em 0;
+      font-size: x-large;
+    }
+    .settings>div>div>span {
+        position: absolute;
+        left: 340px;
+    }
+    .settings>div {
+        margin: .2em;
+        width: 410px;
+        background: #333;
+    }
+    .settings>div>div {
+        display: table-cell;
+        vertical-align: middle;
     }
     .warn {
       color: red;
     }
+
+    @media (max-width: 440px) {
+        input, select {
+          width: 200px;
+        }
+        .settings>div {
+            width: 300px;
+        }
+        .settings>div>div>span {
+            left: 240px;
+        }
+    }
   </style>
 </head>
 <body>
-<p class="warn">Note: This only works correctly in Safari. On Chrome, as of v39, there's a bug which prevents long strings from working.
-Change the string to something small like "hello world" and it works. Firefox as of v32 doesn't yet support the
-HTML5 Speech Synthesis API.
-</p>
-<textarea id="t">
+<outer>
+  <div class="header">
+    <h1>Fan Fiction Reader</h1>
+    <div>paste in some text, select a voice, click talk...</div>
+  </div>
+  <textarea id="t">
 We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
 
 Article. I.
@@ -128,85 +168,105 @@ Each House may determine the Rules of its Proceedings, punish its Members for di
 Each House shall keep a Journal of its Proceedings, and from time to time publish the same, excepting such Parts as may in their Judgment require Secrecy; and the Yeas and Nays of the Members of either House on any question shall, at the Desire of one fifth of those Present, be entered on the Journal.
 
 Neither House, during the Session of Congress, shall, without the Consent of the other, adjourn for more than three days, nor to any other Place than that in which the two Houses shall be sitting.
-</textarea><br/>
-<button id="talk">talk</button><button id="stop">stop</button>
-<input type="range" value="1" id="rate"  step="0.1" min="0.1" max="10" />
-<input type="range" value="1"   id="pitch" step="0.1" min="0"   max="2"  />
-<div>voice:
-<select id="v"></select></div>
+</textarea>
+  <div>
+    <button id="talk">talk</button><button id="stop">stop</button>
+    <div class="settings">
+      <div><div><input type="range" value="1" id="rate"  step="0.1" min="0.1" max="4" /></div></div>
+      <div><div><input type="range" value="1"   id="pitch" step="0.1" min="0"   max="2"  /></div></div>
+      <div><div><select id="v"></select><span>voice:</span></div>
+    </div>
+  </div>
+</div>
 <script>
-var $ = document.getElementById.bind(document);
+function main() {
+  const $ = document.getElementById.bind(document);
 
-var t = $("t");
-var v = $("v");
-var talk = $("talk");
-var stop = $("stop");
+  const t = $("t");
+  const v = $("v");
+  const talk = $("talk");
+  const stop = $("stop");
 
-var msg = new SpeechSynthesisUtterance();
-msg.voiceURI = 'native';
-msg.volume = 1; // 0 to 1
-msg.lang = 'en-US';
-
-Array.prototype.forEach.call(document.getElementsByTagName("input"), function(rangeElem) {
-  var labelElem = document.createElement("span");
-  labelElem.appendChild(document.createTextNode(rangeElem.id + ": "));
-  var valueElem = document.createElement("span");
-  var valueText = document.createTextNode(rangeElem.value);
-  valueElem.appendChild(labelElem);
-  valueElem.appendChild(valueText);
-  rangeElem.parentElement.insertBefore(valueElem, rangeElem.nextSibling);
-  var update = function() {
-    msg[rangeElem.id] = rangeElem.value;
-    valueText.nodeValue = rangeElem.value;
+  const settings = {
   };
-  rangeElem.addEventListener('change', update, false);
-  rangeElem.addEventListener('input', update, false);
-  update();
-});
 
-
-
-var voices = speechSynthesis.getVoices();
-
-if (voices && voices.length) {
-  voices.forEach(function(voice) {
-    var opt = document.createElement("option");
-    opt.appendChild(document.createTextNode(voice.name));
-    if (voice.default) {
-      opt.selected="selected";
-    }
-    v.appendChild(opt);
+  [].forEach.call(document.getElementsByTagName("input"), function(rangeElem) {
+    const labelElem = document.createElement("span");
+    labelElem.appendChild(document.createTextNode(rangeElem.id + ": "));
+    const valueElem = document.createElement("span");
+    const valueText = document.createTextNode(rangeElem.value);
+    valueElem.appendChild(labelElem);
+    valueElem.appendChild(valueText);
+    rangeElem.parentElement.insertBefore(valueElem, rangeElem.nextSibling);
+    const update = function() {
+      settings[rangeElem.id] = rangeElem.value;
+      valueText.nodeValue = rangeElem.value;
+    };
+    rangeElem.addEventListener('change', update, false);
+    rangeElem.addEventListener('input', update, false);
+    update();
   });
-}
-
-v.addEventListener('change', function(e) {
-  msg.voice = voices[v.selectedIndex];
-}, false);
 
 
-msg.onend = function(event) {
-  console.log('Finished in ' + event.elapsedTime + ' seconds.');
-};
-
-
-
-var startTalking = function() {
-  if (speechSynthesis.speaking) {
-    stopTalking();
+  let tries = 50;
+  let voices;
+  function getVoices() {
+    voices = speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) {
+      if (tries) {
+        --tries;
+        setTimeout(getVoices, 100);  // In chrome they are not ready immediately!???!
+      } else {
+        console.log("no voices");
+        start();
+      }
+    } else {
+      start();
+    }
   }
-  msg.text = t.value;
-  speechSynthesis.speak(msg);
-};
+  getVoices();
 
-var stopTalking = function() {
-  speechSynthesis.cancel(msg);
-};
+  function start() {
+    if (voices && voices.length) {
+      voices.filter(v => v.localService).forEach(function(voice) {
+        const opt = document.createElement("option");
+        opt.appendChild(document.createTextNode(`${voice.name} [${voice.lang}]`));
+        if (voice.default) {
+          opt.selected="selected";
+        }
+        v.appendChild(opt);
+      });
+      settings.voice = voices[0];
+    }
 
-talk.addEventListener('click', startTalking, false);
-stop.addEventListener('click', stopTalking, false);
-window.addEventListener('unload', stopTalking, false);
+    v.addEventListener('change', function(e) {
+      settings.voice = voices[v.selectedIndex];
+    }, false);
 
-startTalking();
+    function startTalking() {
+      if (speechSynthesis.speaking) {
+        stopTalking();
+      }
+
+      const msg = new SpeechSynthesisUtterance(t.value);
+      msg.volume = 1; // 0 to 1
+      msg.lang = 'en-US';
+      Object.assign(msg, settings);
+      speechSynthesis.speak(msg);
+    };
+
+    function stopTalking() {
+      speechSynthesis.cancel();
+    };
+
+    talk.addEventListener('click', startTalking, false);
+    stop.addEventListener('click', stopTalking, false);
+    window.addEventListener('unload', stopTalking, false);
+
+    startTalking();
+  }
+}
+main();
 
 </script>
 </body>
