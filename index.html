@@ -155,6 +155,8 @@
             left: 240px;
         }
     }
+
+    #url { display: none; }
   </style>
 </head>
 <body>
@@ -344,7 +346,7 @@ function main() {
     talk.addEventListener('click', startTalking, false);
     stop.addEventListener('click', stopTalking, false);
     window.addEventListener('unload', stopTalking, false);
-    getUrl.addEventListener('click', getShortUrl, false)
+    //getUrl.addEventListener('click', getShortUrl, false)
     startTalking();
   }
 
