@@ -72,7 +72,7 @@
     h1 {
         margin: .2em 0 .2em 0;
     }
-    outer {
+    .outer {
         width: 100vw;
         height: 100vh;
         padding: 1em;
@@ -158,89 +158,48 @@
   </style>
 </head>
 <body>
-<outer>
+<div class="outer">
   <div class="header">
     <h1>Fan Fiction Reader</h1>
     <div>paste in some text, select a voice, click talk...</div>
   </div>
-  <textarea id="t">
-We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.
-
-Article. I.
-
-Section. 1.
-
-All legislative Powers herein granted shall be vested in a Congress of the United States, which shall consist of a Senate and House of Representatives.
-
-Section. 2.
-
-The House of Representatives shall be composed of Members chosen every second Year by the People of the several States, and the Electors in each State shall have the Qualifications requisite for Electors of the most numerous Branch of the State Legislature.
-
-No Person shall be a Representative who shall not have attained to the Age of twenty five Years, and been seven Years a Citizen of the United States, and who shall not, when elected, be an Inhabitant of that State in which he shall be chosen.
-
-Representatives and direct Taxes shall be apportioned among the several States which may be included within this Union, according to their respective Numbers, which shall be determined by adding to the whole Number of free Persons, including those bound to Service for a Term of Years, and excluding Indians not taxed, three fifths of all other Persons. The actual Enumeration shall be made within three Years after the first Meeting of the Congress of the United States, and within every subsequent Term of ten Years, in such Manner as they shall by Law direct. The Number of Representatives shall not exceed one for every thirty Thousand, but each State shall have at Least one Representative; and until such enumeration shall be made, the State of New Hampshire shall be entitled to chuse three, Massachusetts eight, Rhode-Island and Providence Plantations one, Connecticut five, New-York six, New Jersey four, Pennsylvania eight, Delaware one, Maryland six, Virginia ten, North Carolina five, South Carolina five, and Georgia three.
-
-When vacancies happen in the Representation from any State, the Executive Authority thereof shall issue Writs of Election to fill such Vacancies.
-
-The House of Representatives shall chuse their Speaker and other Officers; and shall have the sole Power of Impeachment.
-
-Section. 3.
-
-The Senate of the United States shall be composed of two Senators from each State, chosen by the Legislature thereof, for six Years; and each Senator shall have one Vote.
-
-Immediately after they shall be assembled in Consequence of the first Election, they shall be divided as equally as may be into three Classes. The Seats of the Senators of the first Class shall be vacated at the Expiration of the second Year, of the second Class at the Expiration of the fourth Year, and of the third Class at the Expiration of the sixth Year, so that one third may be chosen every second Year; and if Vacancies happen by Resignation, or otherwise, during the Recess of the Legislature of any State, the Executive thereof may make temporary Appointments until the next Meeting of the Legislature, which shall then fill such Vacancies.
-
-No Person shall be a Senator who shall not have attained to the Age of thirty Years, and been nine Years a Citizen of the United States, and who shall not, when elected, be an Inhabitant of that State for which he shall be chosen.
-
-The Vice President of the United States shall be President of the Senate, but shall have no Vote, unless they be equally divided.
-
-The Senate shall chuse their other Officers, and also a President pro tempore, in the Absence of the Vice President, or when he shall exercise the Office of President of the United States.
-
-The Senate shall have the sole Power to try all Impeachments. When sitting for that Purpose, they shall be on Oath or Affirmation. When the President of the United States is tried, the Chief Justice shall preside: And no Person shall be convicted without the Concurrence of two thirds of the Members present.
-
-Judgment in Cases of Impeachment shall not extend further than to removal from Office, and disqualification to hold and enjoy any Office of honor, Trust or Profit under the United States: but the Party convicted shall nevertheless be liable and subject to Indictment, Trial, Judgment and Punishment, according to Law.
-
-Section. 4.
-
-The Times, Places and Manner of holding Elections for Senators and Representatives, shall be prescribed in each State by the Legislature thereof; but the Congress may at any time by Law make or alter such Regulations, except as to the Places of chusing Senators.
-
-The Congress shall assemble at least once in every Year, and such Meeting shall be on the first Monday in December, unless they shall by Law appoint a different Day.
-
-Section. 5.
-
-Each House shall be the Judge of the Elections, Returns and Qualifications of its own Members, and a Majority of each shall constitute a Quorum to do Business; but a smaller Number may adjourn from day to day, and may be authorized to compel the Attendance of absent Members, in such Manner, and under such Penalties as each House may provide.
-
-Each House may determine the Rules of its Proceedings, punish its Members for disorderly Behaviour, and, with the Concurrence of two thirds, expel a Member.
-
-Each House shall keep a Journal of its Proceedings, and from time to time publish the same, excepting such Parts as may in their Judgment require Secrecy; and the Yeas and Nays of the Members of either House on any question shall, at the Desire of one fifth of those Present, be entered on the Journal.
-
-Neither House, during the Session of Congress, shall, without the Consent of the other, adjourn for more than three days, nor to any other Place than that in which the two Houses shall be sitting.
-</textarea>
+  <textarea id="t"></textarea>
   <div>
-    <button id="talk">talk</button><button id="stop">stop</button>
+    <button id="talk">talk</button><button id="stop">stop</button><button id="url">get url</button>
     <div class="settings">
       <div><div><input type="range" value="1" id="rate"  step="0.1" min="0.1" max="4" /></div></div>
-      <div><div><input type="range" value="1"   id="pitch" step="0.1" min="0"   max="2"  /></div></div>
+      <div><div><input type="range" value="1" id="pitch" step="0.1" min="0"   max="2"  /></div></div>
       <div><div><select id="v"></select><span>voice:</span></div>
     </div>
   </div>
 </div>
+<script src="js/lzma.js"></script>
 <script>
-function main() {
-  const $ = document.getElementById.bind(document);
+const compressor = new LZMA( "js/lzma_worker.js" );
 
-  const t = $("t");
-  const v = $("v");
-  const talk = $("talk");
-  const stop = $("stop");
+function main() {
+  const $ = document.querySelector.bind(document);
+
+  const t = $('#t');
+  const v = $('#v');
+  const talk = $('#talk');
+  const stop = $('#stop');
+  const getUrl = $('#url');
+  const googleApiKey = 'AIzaSyDGvzuv_UPR5p-m0i3eq4pCU4DkXreVsE8';
+  const bitlyAccessToken = '6b7d8faca9af4e56031431782896ab7bf5cc1016';
 
   const settings = {
+    pitch: 1,
+    rate: 1,
   };
 
-  [].forEach.call(document.getElementsByTagName("input"), function(rangeElem) {
-    const labelElem = document.createElement("span");
-    labelElem.appendChild(document.createTextNode(rangeElem.id + ": "));
-    const valueElem = document.createElement("span");
+  const ui = [
+  ];
+
+  [].forEach.call(document.querySelectorAll('input'), (rangeElem) => {
+    const labelElem = document.createElement('span');
+    labelElem.appendChild(document.createTextNode(rangeElem.id + ': '));
+    const valueElem = document.createElement('span');
     const valueText = document.createTextNode(rangeElem.value);
     valueElem.appendChild(labelElem);
     valueElem.appendChild(valueText);
@@ -249,9 +208,14 @@ function main() {
       settings[rangeElem.id] = rangeElem.value;
       valueText.nodeValue = rangeElem.value;
     };
+    const set = function() {
+      rangeElem.value = settings[rangeElem.id];
+      valueText.nodeValue = settings[rangeElem.id];
+    };
     rangeElem.addEventListener('change', update, false);
     rangeElem.addEventListener('input', update, false);
     update();
+    ui.push(set);
   });
 
 
@@ -264,7 +228,7 @@ function main() {
         --tries;
         setTimeout(getVoices, 100);  // In chrome they are not ready immediately!???!
       } else {
-        console.log("no voices");
+        console.log('no voices');
         start();
       }
     } else {
@@ -273,51 +237,193 @@ function main() {
   }
   getVoices();
 
-  function start() {
-    if (voices && voices.length) {
-      voices.filter(v => v.localService).forEach(function(voice) {
-        if (voice.name === "Victoria") {
-          settings.voice = voice;
-        }
-        const opt = document.createElement("option");
-        opt.appendChild(document.createTextNode(`${voice.name} [${voice.lang}]`));
-        if (voice.default) {
-          opt.selected="selected";
-        }
-        v.appendChild(opt);
-      });
-      settings.voice = settings.voice || voices[0];
+  function convertHexToBytes(text) {
+    var array = [];
+    for (var i = 0; i < text.length; i += 2) {
+      var tmpHex = text.substring(i, i + 2);
+      array.push(parseInt(tmpHex, 16));
     }
+    return array;
+  }
 
-    v.addEventListener('change', function(e) {
-      settings.voice = voices[v.selectedIndex];
-    }, false);
-
-    function startTalking() {
-      if (speechSynthesis.speaking) {
-        stopTalking();
+  function convertBytesToHex(byteArray) {
+    var hex = '';
+    for (var i = 0, il = byteArray.length; i < il; i++) {
+      if (byteArray[i] < 0) {
+        byteArray[i] = byteArray[i] + 256;
       }
+      var tmpHex = byteArray[i].toString(16);
+      // add leading zero
+      if (tmpHex.length == 1) {
+        tmpHex = '0' + tmpHex;
+      }
+      hex += tmpHex;
+    }
+    return hex;
+  }
 
-      const msg = new SpeechSynthesisUtterance(t.value);
-      msg.volume = 1; // 0 to 1
-      msg.lang = 'en-US';
-      Object.assign(msg, settings);
-      speechSynthesis.speak(msg);
-    };
+  function startTalking() {
+    if (speechSynthesis.speaking) {
+      stopTalking();
+    }
+    settings.text = t.value;
+    const msg = new SpeechSynthesisUtterance(t.value);
+    msg.volume = 1; // 0 to 1
+    msg.rate = settings.rate;
+    msg.pitch = settings.pitch;
+    const vs = voices.filter(v => v.name === settings.voiceName);
+    vs.push(voices[0]);
+    msg.voice = vs[0];
+    speechSynthesis.speak(msg);
+    setURL();
+  }
 
-    function stopTalking() {
-      speechSynthesis.cancel();
-    };
+  function stopTalking() {
+    speechSynthesis.cancel();
+  }
 
+  function xhrJSON(url, obj) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = "json";
+      xhr.open('POST', url);
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function(e) {
+        reject(e);
+      };
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      const data = JSON.stringify(obj);
+      xhr.send(data);
+      console.log('sent:', data);
+    });
+  }
+
+  //function getShortUrl() {
+  //  settings.text = t.value;
+  //  compressor.compress(JSON.stringify(settings), 1, function(bytes) {
+  //    const hex = convertBytesToHex(bytes);
+  //    const url = window.location.origin + window.location.pathname + `#${hex}`;
+  //    const api = `https://www.googleapis.com/urlshortener/v1/url?key=${googApiKey}`;
+  //    xhrJSON(api, {
+  //      longUrl: url,
+  //    }).then((result) => {
+  //      console.log(result);
+  //    });
+  //  },
+  //  dummyFunction);
+  //}
+
+  function makeQuery(obj) {
+    return Object.keys(obj).map((key) => {
+      return `${encodeURIComponent(key)}=${encodeURIComponent(obj[key])}`;
+    }).join('&');
+  }
+
+  function getShortUrl() {
+    settings.text = t.value;
+    compressor.compress(JSON.stringify(settings), 1, function(bytes) {
+      const hex = convertBytesToHex(bytes);
+      const url = window.location.origin + window.location.pathname + `#${hex}`;
+      const data = {
+        longUrl: url,
+        access_token: bitlyAccessToken,
+      }
+      const api = `https://api-ssl.bitly.com/V3/SHORTEN?${makeQuery(data)}`;
+      xhrJSON(api, {
+        longUrl: url,
+      }).then((result) => {
+        console.log(result);
+      });
+    },
+    dummyFunction);
+  }
+
+  function start2() {
     talk.addEventListener('click', startTalking, false);
     stop.addEventListener('click', stopTalking, false);
     window.addEventListener('unload', stopTalking, false);
-
+    getUrl.addEventListener('click', getShortUrl, false)
     startTalking();
   }
-}
-main();
 
+  function dummyFunction() {
+  }
+
+  let dontSet = true;
+  function setURL() {
+    if (dontSet) {
+      dontSet = false;
+      return;
+    }
+    compressor.compress(JSON.stringify(settings), 1, function(bytes) {
+      var hex = convertBytesToHex(bytes);
+      window.location.replace(`#${hex}`);
+    },
+    dummyFunction);
+  }
+
+  function readURL(hash) {
+    const bytes = convertHexToBytes(hash);
+    compressor.decompress(bytes, function(data) {
+      try {
+        const s = JSON.parse(data);
+        Object.assign(settings, s);
+      } catch (e) {
+        console.error(e);
+      }
+      updateUI();
+      start2();
+    },
+    dummyFunction);
+  }
+
+  function getIndexOfVoiceByName(name) {
+    for (let i = 0; i < voices.length; ++i) {
+      if (voices[i].name === name) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  function updateUI() {
+    t.value = settings.text;
+    ui.forEach((u) => u());
+    v.selectedIndex = getIndexOfVoiceByName(settings.name);
+  }
+
+  function start() {
+    if (voices && voices.length) {
+      voices.filter(v => v.localService).forEach(function(voice, ndx) {
+        const opt = document.createElement('option');
+        opt.appendChild(document.createTextNode(`${voice.name} [${voice.lang}]`));
+        if (voice.name === 'Victoria') {
+          settings.voiceName = voice.name;
+        }
+        if (voice.default) {
+          settings.voiceName = settings.voiceName || voice.name;
+        }
+        v.appendChild(opt);
+      });
+      settings.voiceName = settings.voiceName || voice[0].name;
+    }
+
+    v.addEventListener('change', function(e) {
+      settings.voiceName = voices[v.selectedIndex].name;
+    }, false);
+
+    if (window.location.hash) {
+      var hash = window.location.hash.substr(1);
+      readURL(hash);
+    } else {
+      readURL('5d000001003617000000000000003d888a06d454b8e6fb4004418cc3d21eb284e2eba97b590f5cd30e90f8812906bf47cfcb5f2283f710416d8c2d981d3e5aae0dd44d4ca421f78b147e7cc4af1742afef549f4abb8e12bafa0535d4eacd6b041f12e808e582145f48880cbc357059b51a3bebd482a052a8ada922cd52d0bd0e63b724e8c81c4007602d648b7d02af7ef08a8f17c84bc9baa2bac0acc3d08b94985a51ed568c9d9b7e3fc835b6c4b3650bffeba4a6cc9a8cd86929b3bd772d41a0ff6734a28ada1abe0eec86806e7e746d5339c5ffe1c24178d80a5c2698c2bf22f887b8192275734c3560c0d0746a823643b127ada0eccb2174649dc1db6cd0b685b432ebb4156cd2a005c3ea6342a053233ca7fa9aa9e2243a24a7fc3bc0d31a9ff633bc0f30f3bf14f39da8d85916e2693ee1562e807849e30e31472c827a02a649b6aac2b81d3e937814f2c9b4129fa7ea332a4e1cff01ad3d872e835326bc7859bb0486079c714e0271ef017fd6fdfc433fc0ae90b08d880f2b15e98e111d93e46f66a07c20a119ecb48c20452b1809029403ab9f1fe6bbb520f14f179e5610c383ad11566184703888688a8cc6527da3068ad568628314342acd432ddbbebc5f14506a59a5a7d247d5a81c7545d1bf753cd1df9e73488b35c17f9eed24361ed97c7cbf33662dbef3b0922e360d3f593638f9c8c567ef29c25f751caafa986c35c041497748042c8268be61649f94f0cd64c87fe7307bcf85f96664edbc534a98fe437470ba7635061a2f0d3e4ecfc962b1489ac195c0b524ab8c643aef15ce2ce8544d28dbf671773d2a8685af35e6a563e9857e36dd7798cfda4bd6180f0b3d308b431aa4ef81f01edde7fffbd369111f0f828ec5685aa9b07bb285c8fd944c4757c7de75a0f29182fdacd27f475467052cf157cdc3441522b941f6d547dee2c4eb689fb73b8ef4d637c7dbf77ce767141437cb8429acc321cdc532e9e9ec174d362955b6f7de9dee988adeb88ec8b1a13e0163994eda84b1cab2307c953bfe909934a432bcef117bd574b4c0538afcab369e73dc9174a9868be31c82828b70ac245451671f0fe60fe86c16020e492c427241071d44c8704431808d49557ed032583ce57556126da6715d63c5613ecf339bff7db64388a8ab3dcd603c730e33e482776947f2a71d03bf809840eec3fa5cf77d5444ed26bd94fb6460a56d10b40a1a96d1f4bc3be94dc25029c69b6951b766497c2d74b00587596cf52714b44280672cec57b4d3f46b290caff92f865d41094a692e9dc9b907efa3fae8006b5f445538c5e6f89bbcaf1433a1f58d3c2fd7e90bf40c01cacf95981284ded90f7104efd779aa6db32c8a0541b29e162e5a362a55d4400170194e25e65c3dc1cbe3846784bc1ce43592138a5a3c90de9aa676eece65da0bbbf60e7b56025081be9cbfd900021a1bfa9f9816f5ad85314145d0a6ec50dab75cf02ca6d4e1f70c68e7ef18a981be52af2295099786090ce0d6693eabb60da70a29b31ea2203786e090ba6eea7b163f098c79b21c07917302eb0fe9f6cd1c10c4b0e0050053a80d0174a876ea61ddf521f7c3b1bda35a6e0c6a7d170a3d99fd141c3cf424ee523b5d103b7e9dbc6165df03e8b15280667ee741adec6201fe995e3d1edfdfb8dedf25f969681f515655d8c28312486783a62792ad487180b36c710c3959cdaa6e91cb61aa0b5f6cc16781e771709fdf9ebfb876a04eb64212700c697896384b94ed6bd61cd597e4279d91c5af91582f97531c67de716686152056f44289a25a49dbf723d6cd3200197f1c163789fdda745cfa7f8c7139ab0443b3579dacd0f79815a290eebb69c2889b4b493cffb7aeaa522cae54f202c5f997fa523728f41fceba45abc796586bf62049e6a813b985614b5ae37a8f4c0f94b81e2e1f81c6fbbf3db370e25742274264c223e25b714c21118982bb95e187758f15c6a0e264517c5a0c23ca42422ea16fec145905eeca5fe37e2cf95809d8e84c14d54df5f5ae7796edf6245b56224fcb321670c0d58237b34b64ac9d29f9c513aeb4c073301715c83aca661820a66b7a2c1a8a41ad04172661ffe0c667b6e16da87ead28509e981b6d656ad50b8f43e6fa5667ba53463433dea9502c94031a56d0bacc00b7de4d289541b1d5029d5aa3979479f56cc698cc0ec1419e8a5ed9b91a540a3e98db6dc09e1bb2c757c04a7df753b0904558f2cf485b223989ba8c0cc7c837fe64977d88a85bc5e87812ca706dae07e7f44d9d69b39234458bb064decbb2a9e7eac0b457537bca1ce2a90a9cc11f497b19030ab3803760937c9270763c9a27fce0e66441451b55ff12b3c86dae43019c2fede66bd34f7f8df7834078bc9b22b96fe4ec9cf067787a377536338d61bc52cf4138bb12136b27213e1bd3cbb26603e81b24ea92f310c9c7852e848382345e75135813e03a33d86feaeefc6ba58aa1d178aba03f533fd9ff7e484b4238c99afd41c9ea5c2626e1d2f11af471bbe6a0cd3b26982d67aa74b079945de61c8f0f03530eece22f440c38abd5139864c0e04cb8b87927ed8ab8f122dcd3fee160187ebeac32f57bf2306131a3d49915b634b77f38a6e3b37bc8baa049af505c8aa29174c60515d2d75f3c6902d7f341ff91f034224595de3213eae4a4800e4beaedbea84f3553c99d35f21d6139372edf62694b7ecade7aed5bd271ce732310ae88608cfde13bd6aea606e581cc8a85f278649e4062284e13d939dfbe2eeb7fbdf4aa499261b23cbdb36e758e8a42f670c6b1a7313eb0253c867a8f349c4c430765ba6f7351c697fcb512ef6b9449bc8d9c3ef20ed0bc4a5ab7e51ea737a92b2f59242a38e925f5141faa58c6f48c89778596e30b9f2a976c7da875a87346b85ad99d61e8950dcff74f82c8d8a09f282659cacfee09e54616f52d08c73f5ca603a5efe63cf4f9a10d6c3953001a8fbfc89c7484479cd5d906c442ad38c110cb36498a58ff3e81a6984c6bf076e82914d9a2f5bb53b923dff4e35cb7ffbbb3df2bd1ebecb4a1cb13a774a8b06f3a1cdf77771e2b8076f63668140f69e80f022d5f19ad24e8b753d184d1fd805da92002395a6045f098db7a4fde1f9016ed5e3d277af9f9a4c3880713141bf980ae1b48fef2bd70c5d078829f1292eab25e9f2370de6bdbff300fc31f64d02cc47e0274b543cb2e409b63d1f16c670b933a1f3dad877eedfffb0edc59');
+    }
+  }
+}
+
+main();
 </script>
 </body>
 </html>
