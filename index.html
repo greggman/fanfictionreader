@@ -393,7 +393,7 @@ function main() {
   function updateUI() {
     t.value = settings.text;
     ui.forEach((u) => u());
-    v.selectedIndex = getIndexOfVoiceByName(settings.name);
+    v.selectedIndex = getIndexOfVoiceByName(settings.voiceName);
   }
 
   function start() {
