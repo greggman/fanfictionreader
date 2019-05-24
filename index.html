@@ -59,11 +59,13 @@
       box-sizing: border-box;
       -moz-box-sizing: border-box;
     }
-    body {
+    html, body {
         background-color: rgb(255, 89, 248);
         color: white;
         font-size: large;
         margin: 0;
+        width: 100%;
+        height: 100%;
     }
     .header {
         background: #de36c2;
@@ -75,8 +77,8 @@
         margin: 0;
     }
     .outer {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         padding: 1em;
         display: flex;
         flex-direction: column;
